@@ -1,0 +1,162 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #07101f;
+  color: #f8fafc;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(37, 99, 235, .18), transparent 36rem),
+    #07101f;
+}
+
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+
+.shell {
+  width: min(100% - 32px, 620px);
+  margin: 0 auto;
+  padding: 32px 0 48px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #60a5fa;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
+h1 { margin: 0; font-size: clamp(30px, 7vw, 46px); }
+h2 { margin: 0; font-size: 18px; }
+
+.badge {
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.badge-offline { background: #3f1d26; color: #fecdd3; }
+.badge-online { background: #123524; color: #bbf7d0; }
+
+.card {
+  background: rgba(15, 23, 42, .88);
+  border: 1px solid rgba(148, 163, 184, .16);
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+  backdrop-filter: blur(10px);
+}
+
+.hidden { display: none; }
+label, .label { display: block; color: #cbd5e1; font-size: 14px; margin: 12px 0 7px; }
+
+input {
+  width: 100%;
+  border: 1px solid #334155;
+  border-radius: 13px;
+  background: #0b1220;
+  color: #fff;
+  padding: 13px 14px;
+  outline: none;
+}
+input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, .12); }
+
+.room-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+
+.primary, .secondary, .danger {
+  border: 0;
+  border-radius: 13px;
+  padding: 12px 14px;
+  font-weight: 800;
+}
+.primary { width: 100%; margin-top: 18px; background: #2563eb; color: white; }
+.secondary { background: #1e293b; color: #e2e8f0; }
+.danger { width: 100%; margin-top: 18px; background: #3f1d26; color: #fecdd3; }
+.help, .keyboard-help { color: #94a3b8; text-align: center; font-size: 13px; }
+
+.room-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+.room-info .label { margin: 0 0 3px; }
+
+.speaker-status {
+  margin: 28px auto 18px;
+  width: fit-content;
+  min-width: 160px;
+  text-align: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #0b1220;
+  color: #94a3b8;
+  font-weight: 800;
+}
+.speaker-status.active { background: #123524; color: #86efac; }
+
+.ptt {
+  width: min(72vw, 280px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 8px solid rgba(255,255,255,.08);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  color: white;
+  box-shadow: 0 22px 50px rgba(185, 28, 28, .28);
+  user-select: none;
+  touch-action: none;
+  transition: transform .08s ease, box-shadow .08s ease, background .08s ease;
+}
+.ptt.active {
+  transform: scale(.97);
+  background: linear-gradient(180deg, #22c55e, #15803d);
+  box-shadow: 0 18px 44px rgba(21, 128, 61, .34);
+}
+.ptt-icon { font-size: 40px; margin-bottom: 8px; }
+.ptt-main { font-weight: 950; font-size: 20px; letter-spacing: .03em; }
+.ptt-sub { margin-top: 5px; font-size: 12px; opacity: .82; }
+kbd { background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 2px 7px; }
+
+.participants-block { margin-top: 24px; }
+.participants-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.participants-heading span { color: #94a3b8; }
+.participants { display: grid; gap: 8px; }
+.participant {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: #0b1220;
+  border: 1px solid rgba(148,163,184,.12);
+}
+.participant .dot { width: 9px; height: 9px; border-radius: 50%; background: #64748b; }
+.participant.speaking .dot { background: #22c55e; box-shadow: 0 0 0 5px rgba(34,197,94,.12); }
+.notice { min-height: 24px; text-align: center; color: #fca5a5; margin: 16px 0 0; }
+
+@media (max-width: 520px) {
+  .shell { width: min(100% - 20px, 620px); padding-top: 20px; }
+  .card { padding: 17px; border-radius: 18px; }
+  .room-info { align-items: flex-start; flex-direction: column; }
+  .room-info .secondary { width: 100%; }
+}
