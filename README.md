@@ -1,60 +1,36 @@
-# PTTConnect
+# PTTConnect Android
 
-PTTConnect is een eenvoudige push-to-talk webapp. Gebruikers gaan een kamer in, houden de grote knop ingedrukt en sturen dan live audio naar de andere deelnemers via WebRTC.
+PTTConnect is an unofficial Android push-to-talk client for TeamSpeak 3 compatible servers.
 
-## Functies
+## PTTConnect defaults
 
-- Push-to-talk via knop of spatiebalk
-- Kamercodes en deellinks
-- WebRTC peer-to-peer audio
-- WebSocket-signaling
-- Deelnemerslijst en spreekstatus
-- Mobielvriendelijke interface
-- PWA/installeerbaar op ondersteunde apparaten
-- Docker-ondersteuning
-- GitHub Actions CI
-- STUN standaard, TURN configureerbaar
+- Default server: `Heerlen.MIJNTS3.NL`
+- Default voice port: `9987`
+- Nickname: entered by the user
+- Saved servers: users can save multiple server addresses and remove them later
+- Voice: listen to supported TS3 Opus channels and hold the PTT button to transmit
+- Channels: browse and join available channels
 
-## Lokaal starten
+## How the build works
 
-Vereisten: Node.js 20 of nieuwer.
+This repository intentionally stores only the PTTConnect overlay/build recipe. GitHub Actions:
 
-```bash
-npm install
-npm start
-```
+1. Checks out this repository.
+2. Clones the pinned Apache-2.0 licensed T3Vox Android client source.
+3. Applies PTTConnect branding, package ID and default server settings.
+4. Runs Android unit tests and builds a debug APK.
+5. Uploads `PTTConnect-debug.apk` as a GitHub Actions artifact.
 
-Open daarna `http://localhost:3000`.
+The upstream revision is pinned in `pttconnect/apply_overlay.py` and the workflow so builds remain reproducible.
 
-## Testen
+## Downloading the APK after GitHub builds it
 
-```bash
-npm run check
-npm test
-```
+Open **Actions** in this repository, open the latest **Build PTTConnect APK** run and download the `PTTConnect-APK` artifact.
 
-## Docker
+## Important
 
-```bash
-docker compose up --build
-```
+This is an unofficial community client. Voice compatibility must be tested on the target TeamSpeak server and on a physical Android device. Do not use it for emergency or safety-critical communication.
 
-Daarna draait de app op `http://localhost:3000`.
+## Licensing
 
-## Internet / productie
-
-Microfoontoegang werkt op internet alleen betrouwbaar via HTTPS. Gebruik daarom een hostingplatform of reverse proxy met TLS.
-
-PTTConnect gebruikt standaard Google's publieke STUN-server. Voor gebruikers achter strengere firewalls/NAT is een TURN-server nodig. Zet die via `ICE_SERVERS_JSON`:
-
-```env
-ICE_SERVERS_JSON=[{"urls":"stun:stun.l.google.com:19302"},{"urls":"turn:turn.example.com:3478","username":"user","credential":"secret"}]
-```
-
-## Architectuur
-
-De Node-server verzorgt statische bestanden en WebSocket-signaling. Audio loopt rechtstreeks tussen browsers via WebRTC en gaat dus niet via de Node-server. Deze mesh-opzet is bedoeld voor kleine groepen; voor grote kanalen is een SFU-architectuur geschikter.
-
-## Privacy
-
-De server slaat geen audio op. Gebruikersnamen en kamercodes bestaan alleen in het geheugen zolang de verbinding actief is.
+The PTTConnect overlay is distributed under Apache License 2.0. The automated build uses T3Vox, also Apache-2.0 licensed, and preserves its upstream `LICENSE`, `NOTICE`, and `THIRD_PARTY_NOTICES.md` inside the generated APK assets.

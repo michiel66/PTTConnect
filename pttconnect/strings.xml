@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PTTConnect</string>
+    <string name="app_subtitle">Push-to-talk voor TeamSpeak 3</string>
+
+    <string name="notification_channel_name">Spraakverbinding</string>
+    <string name="notification_channel_description">Actieve PTTConnect-spraakverbinding</string>
+    <string name="notification_title_connected">Verbonden met spraakchat</string>
+    <string name="notification_title_connecting">Verbinden…</string>
+    <string name="notification_disconnect">Verbreken</string>
+
+    <string name="action_disconnect">Verbinding verbreken</string>
+    <string name="action_refresh">Vernieuwen</string>
+    <string name="action_connect">Verbinden</string>
+    <string name="action_connecting">Verbinden…</string>
+    <string name="action_join">Deelnemen</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_save_server">Server opslaan</string>
+    <string name="action_delete">Verwijderen</string>
+    <string name="action_grant_permission">Microfoon toestaan</string>
+    <string name="action_show_advanced">Meer opties</string>
+    <string name="action_hide_advanced">Minder opties</string>
+
+    <string name="label_host">Serveradres</string>
+    <string name="label_host_hint">Bijv. Heerlen.MIJNTS3.NL</string>
+    <string name="label_port">Poort</string>
+    <string name="label_port_hint">Standaard 9987</string>
+    <string name="label_nickname">Nickname</string>
+    <string name="label_nickname_hint">Naam die andere gebruikers zien</string>
+    <string name="label_server_password">Serverwachtwoord</string>
+    <string name="label_server_password_hint">Alleen invullen als de server dit vereist</string>
+    <string name="label_channel_password">Kanaalwachtwoord</string>
+    <string name="label_voice_mode">Spreekmodus</string>
+    <string name="label_vad_threshold">Microfoongevoeligheid</string>
+    <string name="label_server_name">Naam voor deze server</string>
+    <string name="label_server_name_hint">Bijv. Heerlen</string>
+    <string name="label_remember_server">Deze server opslaan</string>
+
+    <string name="mode_ptt">Push-to-talk</string>
+    <string name="mode_ptt_desc">Houd de knop ingedrukt terwijl je praat</string>
+    <string name="mode_vad">Automatisch spreken</string>
+    <string name="mode_vad_desc">Microfoon opent wanneer je praat</string>
+
+    <string name="sensitivity_low">Stille ruimte</string>
+    <string name="sensitivity_normal">Normaal</string>
+    <string name="sensitivity_high">Drukke ruimte</string>
+
+    <string name="section_channels">Kanalen</string>
+    <string name="section_users">Gebruikers</string>
+    <string name="section_saved_servers">Opgeslagen servers</string>
+    <string name="section_welcome_title">PTTConnect</string>
+    <string name="section_welcome_body">Kies een opgeslagen server of vul een serveradres in, kies je nickname en druk op Verbinden.</string>
+
+    <string name="tab_talk">Praten</string>
+    <string name="tab_rooms">Kanalen</string>
+    <string name="tab_people">Gebruikers</string>
+
+    <string name="status_connected">Verbonden</string>
+    <string name="status_in_channel">Kanaal: %1$s</string>
+    <string name="status_talking">Je praat</string>
+    <string name="status_listening">Luisteren</string>
+    <string name="status_vad_open">Microfoon aan</string>
+    <string name="status_identity_preparing">Veilige identiteit voorbereiden…</string>
+    <string name="section_identity_help">Alleen nodig als een server de automatisch aangemaakte identiteit weigert.</string>
+    <string name="section_identity_steps">Exporteer dan je identiteit vanuit de desktop TeamSpeak 3-client en plak hier de waarde uit identity="…".</string>
+    <string name="label_import_identity">Geëxporteerde identiteit</string>
+    <string name="label_import_identity_hint">Waarde uit identity="…" uit het geëxporteerde .ini-bestand</string>
+    <string name="hint_debug_identity">Sommige servers vereisen een bestaande TeamSpeak-identiteit.</string>
+    <string name="status_vad_closed">Microfoon uit</string>
+
+    <string name="ptt_hold">INGEDRUKT HOUDEN OM TE PRATEN</string>
+    <string name="ptt_active">JE PRAAT…</string>
+
+    <string name="channel_current">Je bent hier</string>
+    <string name="channel_locked">Wachtwoord vereist</string>
+    <string name="user_talking">Praat nu</string>
+    <string name="people_count">%1$d gebruikers in dit kanaal</string>
+    <string name="rooms_empty">Geen kanalen beschikbaar</string>
+    <string name="people_empty">Niemand anders in dit kanaal</string>
+
+    <string name="permission_title">Microfoontoegang nodig</string>
+    <string name="permission_body">PTTConnect gebruikt de microfoon wanneer je uitzendt. Meldingen houden de verbinding actief wanneer je naar een andere app gaat.</string>
+
+    <string name="unsupported_codec">Dit kanaal gebruikt een audioformaat dat nog niet wordt ondersteund. Gebruik bij voorkeur Opus Voice.</string>
+
+    <string name="error_server_required">Vul een serveradres in.</string>
+    <string name="error_name_required">Vul een nickname in.</string>
+    <string name="error_port_invalid">Deze poort is ongeldig.</string>
+    <string name="error_permission_denied">Microfoontoegang is geweigerd. Sta deze toe in Android-instellingen.</string>
+    <string name="error_identity">De TeamSpeak-identiteit kon niet worden ingesteld.</string>
+    <string name="error_identity_invalid">De ingevoerde identiteit kon niet worden gelezen.</string>
+    <string name="error_identity_public_id">Dit lijkt de publieke Unique ID in plaats van de geëxporteerde privé-identiteit.</string>
+    <string name="error_identity_rejected">De server weigert de automatisch aangemaakte identiteit. Importeer eventueel je desktopidentiteit.</string>
+    <string name="error_identity_rejected_imported">De verbinding liep vast met de geïmporteerde identiteit. Controleer eerst of de desktopclient wel kan verbinden.</string>
+    <string name="error_dns">Server niet gevonden. Controleer het adres en je internetverbinding.</string>
+    <string name="error_timeout">Verbinding verlopen. De server is mogelijk offline of niet bereikbaar.</string>
+    <string name="error_server_rejected">De server heeft de verbinding geweigerd. Controleer wachtwoord en nickname.</string>
+    <string name="error_audio">Audio kon niet worden gestart. Sluit andere spraakapps en probeer opnieuw.</string>
+    <string name="error_disconnected">De verbinding met de server is verbroken.</string>
+    <string name="error_unexpected">Er ging iets mis. Probeer opnieuw.</string>
+
+    <string name="delete_server_title">Opgeslagen server verwijderen?</string>
+    <string name="delete_server_body">"%1$s" wordt uit je serverlijst verwijderd.</string>
+</resources>

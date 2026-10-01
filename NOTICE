@@ -1,0 +1,10 @@
+PTTConnect Android build overlay
+Copyright 2026 PTTConnect contributors
+
+This project builds an unofficial TeamSpeak 3 compatible Android client using
+T3Vox (Apache License 2.0) as an upstream base. It is not affiliated with,
+endorsed by, or sponsored by TeamSpeak Systems GmbH.
+
+TeamSpeak and related names and marks are trademarks of their respective owner.
+The upstream license and third-party notices are copied into the APK assets
+during the automated build.
