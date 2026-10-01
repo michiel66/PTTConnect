@@ -1,0 +1,18 @@
+{
+  "name": "pttconnect",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Push-to-talk webapp met WebRTC-audio en WebSocket-signaling",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check public/app.js && node --check lib/validation.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
