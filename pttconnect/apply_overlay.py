@@ -35,30 +35,37 @@ THEME_KT = r'''
 package com.toosarax.ts3client.ui.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val PttConnectColors = lightColorScheme(
-    primary = Color(0xFF0057B8),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFD8E9FF),
-    onPrimaryContainer = Color(0xFF001B3D),
-    secondary = Color(0xFF006B54),
-    onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFB8F2DD),
-    onSecondaryContainer = Color(0xFF002117),
-    background = Color(0xFFF3F6FA),
-    onBackground = Color(0xFF101820),
-    surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF101820),
-    surfaceVariant = Color(0xFFE4EBF3),
-    onSurfaceVariant = Color(0xFF303942),
-    outline = Color(0xFF59636E),
-    error = Color(0xFFC62828),
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
+private val NeonBlue = Color(0xFF009BFF)
+private val NeonBlueSoft = Color(0xFF40C4FF)
+private val DeepBackground = Color(0xFF020711)
+private val DeepSurface = Color(0xFF07111F)
+private val DeepSurface2 = Color(0xFF0A1829)
+
+private val PttConnectColors = darkColorScheme(
+    primary = NeonBlue,
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFF003B66),
+    onPrimaryContainer = Color(0xFFD6EEFF),
+    secondary = NeonBlueSoft,
+    onSecondary = Color(0xFF001B2B),
+    secondaryContainer = Color(0xFF07314A),
+    onSecondaryContainer = Color(0xFFC6E9FF),
+    background = DeepBackground,
+    onBackground = Color(0xFFF4F8FF),
+    surface = DeepSurface,
+    onSurface = Color(0xFFF4F8FF),
+    surfaceVariant = DeepSurface2,
+    onSurfaceVariant = Color(0xFFAFC4D8),
+    outline = Color(0xFF27435E),
+    outlineVariant = Color(0xFF142A40),
+    error = Color(0xFFFF334F),
+    onError = Color.White,
+    errorContainer = Color(0xFF5A0B17),
+    onErrorContainer = Color(0xFFFFD9DE),
 )
 
 @Composable
@@ -73,21 +80,27 @@ fun Ts3Theme(content: @Composable () -> Unit) {
 PTT_BUTTON_KT = r'''
 package com.toosarax.ts3client.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -102,27 +115,35 @@ fun PttButton(
     onPressedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val background = if (pressed) {
-        MaterialTheme.colorScheme.error
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
-    val foreground = if (pressed) {
-        MaterialTheme.colorScheme.onError
-    } else {
-        MaterialTheme.colorScheme.onPrimary
-    }
+    val accent = if (pressed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    val glow = accent.copy(alpha = if (pressed) 0.42f else 0.32f)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(320.dp),
+            .height(330.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Surface(
+        Box(
             modifier = Modifier
-                .size(265.dp)
-                .alpha(if (enabled) 1f else 0.45f)
+                .size(292.dp)
+                .clip(CircleShape)
+                .background(glow.copy(alpha = 0.10f)),
+        )
+        Box(
+            modifier = Modifier
+                .size(276.dp)
+                .clip(CircleShape)
+                .background(glow.copy(alpha = 0.14f))
+                .border(7.dp, glow, CircleShape),
+        )
+        Box(
+            modifier = Modifier
+                .size(254.dp)
+                .alpha(if (enabled) 1f else 0.42f)
+                .clip(CircleShape)
+                .background(Color(0xFF05101D))
+                .border(4.dp, accent, CircleShape)
                 .pointerInput(enabled) {
                     if (!enabled) return@pointerInput
                     detectTapGestures(
@@ -136,25 +157,632 @@ fun PttButton(
                         },
                     )
                 },
-            shape = CircleShape,
-            color = background,
-            contentColor = foreground,
-            tonalElevation = 10.dp,
-            shadowElevation = 14.dp,
+            contentAlignment = Alignment.Center,
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
+                    .size(226.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, accent.copy(alpha = 0.55f), CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = stringResource(if (pressed) R.string.ptt_active else R.string.ptt_hold),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Black,
-                    textAlign = TextAlign.Center,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(62.dp),
+                    )
+                    Text(
+                        text = stringResource(if (pressed) R.string.ptt_active else R.string.ptt_hold),
+                        color = if (pressed) MaterialTheme.colorScheme.error else Color.White,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Black,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+    }
+}
+'''
+
+CHANNEL_SCREEN_KT = r'''
+package com.toosarax.ts3client.ui
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.toosarax.ts3client.R
+import com.toosarax.ts3client.client.ChannelTreeNode
+import com.toosarax.ts3client.client.ClientState
+import com.toosarax.ts3client.protocol.RemoteClientInfo
+import com.toosarax.ts3client.protocol.VoiceMode
+
+private enum class InCallTab { Talk, Rooms, People }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChannelScreen(
+    state: ClientState,
+    onRefresh: () -> Unit,
+    onDisconnect: () -> Unit,
+    onJoinChannel: (Int, String?) -> Unit,
+    onVoiceModeChanged: (VoiceMode) -> Unit,
+    onVadThresholdChanged: (Float) -> Unit,
+    onPushToTalkChanged: (Boolean) -> Unit,
+) {
+    var selectedTab by remember { mutableIntStateOf(InCallTab.Talk.ordinal) }
+    var passwordChannelId by remember { mutableStateOf<Int?>(null) }
+    var channelPassword by remember { mutableStateOf("") }
+    val tabs = InCallTab.entries
+    val peopleInRoom = state.clients.count { it.channelId == state.currentChannelId }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+                ),
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(13.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary),
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = state.connectedHost.ifBlank { stringResource(R.string.status_connected) },
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            if (state.currentChannelName.isNotBlank()) {
+                                Text(
+                                    text = stringResource(R.string.status_in_channel, state.currentChannelName),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onRefresh) {
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.action_refresh))
+                    }
+                    IconButton(onClick = onDisconnect) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ExitToApp,
+                            contentDescription = stringResource(R.string.action_disconnect),
+                        )
+                    }
+                },
+            )
+        },
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 8.dp),
+        ) {
+            if (state.unsupportedCodec) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                ) {
+                    Text(
+                        text = stringResource(R.string.unsupported_codec),
+                        modifier = Modifier.padding(12.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                    )
+                }
+            }
+
+            state.error?.let { error ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                ) {
+                    Text(
+                        text = error.userMessage(),
+                        modifier = Modifier.padding(12.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                    )
+                }
+            }
+
+            NeonTabs(tabs = tabs, selectedTab = selectedTab, onSelected = { selectedTab = it })
+            Spacer(Modifier.height(10.dp))
+
+            when (tabs[selectedTab]) {
+                InCallTab.Talk -> TalkTab(
+                    state = state,
+                    onVoiceModeChanged = onVoiceModeChanged,
+                    onVadThresholdChanged = onVadThresholdChanged,
+                    onPushToTalkChanged = onPushToTalkChanged,
+                )
+                InCallTab.Rooms -> RoomsTab(
+                    channels = state.channels,
+                    currentChannelId = state.currentChannelId,
+                    onJoin = { channel ->
+                        if (channel.hasPassword) {
+                            passwordChannelId = channel.id
+                            channelPassword = ""
+                        } else {
+                            onJoinChannel(channel.id, null)
+                        }
+                    },
+                )
+                InCallTab.People -> PeopleTab(
+                    clients = state.clients.filter { it.channelId == state.currentChannelId },
+                    talkingClientIds = state.talkingClientIds,
+                    peopleCountLabel = stringResource(R.string.people_count, peopleInRoom),
                 )
             }
+        }
+    }
+
+    if (passwordChannelId != null) {
+        AlertDialog(
+            onDismissRequest = { passwordChannelId = null },
+            title = { Text(stringResource(R.string.label_channel_password)) },
+            text = {
+                OutlinedTextField(
+                    value = channelPassword,
+                    onValueChange = { channelPassword = it },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onJoinChannel(passwordChannelId!!, channelPassword.ifBlank { null })
+                        passwordChannelId = null
+                    },
+                ) { Text(stringResource(R.string.action_join)) }
+            },
+            dismissButton = {
+                Button(onClick = { passwordChannelId = null }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun NeonTabs(
+    tabs: List<InCallTab>,
+    selectedTab: Int,
+    onSelected: (Int) -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(18.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(18.dp)),
+    ) {
+        Row(modifier = Modifier.padding(5.dp)) {
+            tabs.forEachIndexed { index, tab ->
+                val selected = selectedTab == index
+                val icon = when (tab) {
+                    InCallTab.Talk -> Icons.Default.ChatBubble
+                    InCallTab.Rooms -> Icons.Default.List
+                    InCallTab.People -> Icons.Default.Group
+                }
+                val label = when (tab) {
+                    InCallTab.Talk -> stringResource(R.string.tab_talk)
+                    InCallTab.Rooms -> stringResource(R.string.tab_rooms)
+                    InCallTab.People -> stringResource(R.string.tab_people)
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(
+                            if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+                            else Color.Transparent,
+                        )
+                        .border(
+                            width = if (selected) 1.dp else 0.dp,
+                            color = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
+                            else Color.Transparent,
+                            shape = RoundedCornerShape(14.dp),
+                        )
+                        .clickable { onSelected(index) }
+                        .padding(vertical = 10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = if (selected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(25.dp),
+                    )
+                    Text(
+                        text = label,
+                        color = if (selected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Suppress("UNUSED_PARAMETER")
+private fun TalkTab(
+    state: ClientState,
+    onVoiceModeChanged: (VoiceMode) -> Unit,
+    onVadThresholdChanged: (Float) -> Unit,
+    onPushToTalkChanged: (Boolean) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(20.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Default.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = "Push-to-talk",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            text = "Houd de knop ingedrukt terwijl je praat",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(4.dp))
+
+                PttButton(
+                    pressed = state.pushToTalkPressed,
+                    enabled = !state.unsupportedCodec,
+                    onPressedChange = onPushToTalkChanged,
+                    modifier = Modifier.weight(1f),
+                )
+
+                Text(
+                    text = if (state.pushToTalkPressed) "ZENDEN" else "GEREED OM TE PRATEN",
+                    color = if (state.pushToTalkPressed) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+
+        ListeningPanel(isReceiving = state.talkingClientIds.isNotEmpty())
+    }
+}
+
+@Composable
+private fun ListeningPanel(isReceiving: Boolean) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Default.VolumeUp,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(23.dp),
+                    )
+                }
+                Spacer(Modifier.width(10.dp))
+                Column {
+                    Text("Luisteren", fontWeight = FontWeight.Bold)
+                    Text(
+                        text = if (isReceiving) "Audio wordt ontvangen" else "Stand-by",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isReceiving) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            Waveform(active = isReceiving)
+        }
+    }
+}
+
+@Composable
+private fun Waveform(active: Boolean) {
+    val heights = listOf(10, 18, 28, 17, 35, 22, 44, 31, 56, 36, 25, 48, 29, 18, 32, 22, 13, 25, 16, 9)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(62.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        heights.forEachIndexed { index, h ->
+            val bright = active || index in 6..13
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .height(h.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(
+                        MaterialTheme.colorScheme.primary.copy(
+                            alpha = if (bright) 0.95f else 0.35f,
+                        ),
+                    ),
+            )
+        }
+    }
+}
+
+@Composable
+private fun RoomsTab(
+    channels: List<ChannelTreeNode>,
+    currentChannelId: Int,
+    onJoin: (com.toosarax.ts3client.protocol.ChannelInfo) -> Unit,
+) {
+    if (channels.isEmpty()) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(stringResource(R.string.rooms_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        return
+    }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        channels.forEach { node ->
+            channelItems(node, depth = 0, currentChannelId, onJoin)
+        }
+    }
+}
+
+private fun androidx.compose.foundation.lazy.LazyListScope.channelItems(
+    node: ChannelTreeNode,
+    depth: Int,
+    currentChannelId: Int,
+    onJoin: (com.toosarax.ts3client.protocol.ChannelInfo) -> Unit,
+) {
+    val channel = node.channel
+    val isCurrent = channel.id == currentChannelId
+    item(key = "channel-${channel.id}") {
+        ChannelRow(
+            name = channel.name,
+            depth = depth,
+            isCurrent = isCurrent,
+            locked = channel.hasPassword,
+            onClick = { onJoin(channel) },
+        )
+    }
+    node.children.forEach { child ->
+        channelItems(child, depth + 1, currentChannelId, onJoin)
+    }
+}
+
+@Composable
+private fun ChannelRow(
+    name: String,
+    depth: Int,
+    isCurrent: Boolean,
+    locked: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+                else MaterialTheme.colorScheme.surface,
+            )
+            .border(
+                1.dp,
+                if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                else MaterialTheme.colorScheme.outlineVariant,
+                RoundedCornerShape(14.dp),
+            )
+            .clickable(onClick = onClick)
+            .padding(start = (12 + depth * 16).dp, top = 12.dp, end = 12.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Icon(Icons.Default.Folder, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = name, fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Medium)
+            if (isCurrent) {
+                Text(
+                    text = stringResource(R.string.channel_current),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+        if (locked) {
+            Icon(
+                Icons.Default.Lock,
+                contentDescription = stringResource(R.string.channel_locked),
+                modifier = Modifier.size(18.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PeopleTab(
+    clients: List<RemoteClientInfo>,
+    talkingClientIds: Set<Int>,
+    peopleCountLabel: String,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(peopleCountLabel, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (clients.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(stringResource(R.string.people_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(clients, key = { it.id }) { client ->
+                    PersonRow(client = client, talking = client.id in talkingClientIds)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PersonRow(client: RemoteClientInfo, talking: Boolean) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(
+                1.dp,
+                if (talking) MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
+                else MaterialTheme.colorScheme.outlineVariant,
+                RoundedCornerShape(14.dp),
+            )
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Icon(
+            Icons.Default.Person,
+            contentDescription = null,
+            tint = if (talking) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(client.nickname, modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
+        if (talking) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary),
+            )
+            Text(
+                text = stringResource(R.string.user_talking),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+            )
         }
     }
 }
@@ -703,8 +1331,13 @@ def main() -> None:
     )
     require_replace(
         gradle,
+        'versionCode = 1',
+        'versionCode = 2',
+    )
+    require_replace(
+        gradle,
         'versionName = "0.1.0"',
-        'versionName = "0.1.2-pttconnect"',
+        'versionName = "0.2.0-pttconnect-neon"',
     )
 
     app = root / "app/src/main/java/com/toosarax/ts3client/ui/Ts3App.kt"
@@ -730,8 +1363,8 @@ def main() -> None:
         "        enableEdgeToEdge()\n        requestPermissionsIfNeeded()",
         "        enableEdgeToEdge()\n"
         "        WindowCompat.getInsetsController(window, window.decorView).apply {\n"
-        "            isAppearanceLightStatusBars = true\n"
-        "            isAppearanceLightNavigationBars = true\n"
+        "            isAppearanceLightStatusBars = false\n"
+        "            isAppearanceLightNavigationBars = false\n"
         "        }\n"
         "        requestPermissionsIfNeeded()",
     )
@@ -740,12 +1373,7 @@ def main() -> None:
     require_replace(settings, OLD_VOICE_MODE_SETTINGS, NEW_VOICE_MODE_SETTINGS)
 
     channel = root / "app/src/main/java/com/toosarax/ts3client/ui/ChannelScreen.kt"
-    replace_section(
-        channel,
-        "@Composable\nprivate fun TalkTab(",
-        "@Composable\nprivate fun RoomsTab(",
-        TALK_TAB,
-    )
+    write_text(channel, CHANNEL_SCREEN_KT)
 
     write_text(
         root / "app/src/main/java/com/toosarax/ts3client/ui/theme/Theme.kt",
@@ -802,7 +1430,8 @@ def main() -> None:
     print(f"  app id: {APP_ID}")
     print(f"  default server: {DEFAULT_HOST}:{DEFAULT_PORT}")
     print(f"  upstream: {UPSTREAM_COMMIT}")
-    print("  fixes: high-contrast light UI, round Zello-style PTT, PTT-only mode, speaker route, RX jitter/clock")
+    print("  design: dark neon PTT UI, large ring button, talk/rooms/people tabs, listening panel")
+    print("  audio: speaker route and RX jitter/clock fixes retained")
 
 
 if __name__ == "__main__":
