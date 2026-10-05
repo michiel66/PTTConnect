@@ -51,7 +51,9 @@ jobs:
 
       - name: Apply PTTConnect overlay
         shell: bash
-        run: python3 pttconnect/apply_overlay.py .build/t3vox
+        run: |
+          python3 pttconnect/apply_overlay.py .build/t3vox
+          python3 pttconnect/ui_upgrade.py .build/t3vox
 
       - name: Set up Gradle cache
         uses: gradle/actions/setup-gradle@v4
