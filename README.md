@@ -1,3 +1,4 @@
+![PTTConnect voorbeeld](pttconnect-preview.png)
 # PTTConnect Android
 
 PTTConnect is an unofficial Android push-to-talk client for TeamSpeak 3 compatible servers.
