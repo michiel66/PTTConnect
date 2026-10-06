@@ -907,6 +907,76 @@ private fun SavedServerCard(
 '''
 
 
+CHANNEL_TREE_BUILDER_KT = r'''
+package com.toosarax.ts3client.client
+
+import com.toosarax.ts3client.protocol.ChannelInfo
+
+object ChannelTreeBuilder {
+    fun build(flatChannels: List<ChannelInfo>): List<ChannelTreeNode> {
+        if (flatChannels.isEmpty()) return emptyList()
+
+        val channelIds = flatChannels.map { it.id }.toSet()
+        val childrenByParent = flatChannels.groupBy { it.parentId }
+        val originalIndex = flatChannels
+            .withIndex()
+            .associate { indexed -> indexed.value.id to indexed.index }
+
+        fun orderSiblings(siblings: List<ChannelInfo>): List<ChannelInfo> {
+            if (siblings.size <= 1) return siblings
+
+            val siblingIds = siblings.map { it.id }.toSet()
+            val followers = siblings.groupBy { it.predecessorId }
+            val visited = mutableSetOf<Int>()
+            val ordered = mutableListOf<ChannelInfo>()
+
+            fun walk(start: ChannelInfo) {
+                var current: ChannelInfo? = start
+                while (current != null && visited.add(current.id)) {
+                    ordered += current
+                    current = followers[current.id]
+                        .orEmpty()
+                        .filter { it.id !in visited }
+                        .minByOrNull { originalIndex[it.id] ?: Int.MAX_VALUE }
+                }
+            }
+
+            val heads = siblings
+                .filter { channel ->
+                    channel.predecessorId == 0 ||
+                        channel.predecessorId !in siblingIds
+                }
+                .sortedBy { originalIndex[it.id] ?: Int.MAX_VALUE }
+
+            heads.forEach(::walk)
+
+            siblings
+                .filter { it.id !in visited }
+                .sortedBy { originalIndex[it.id] ?: Int.MAX_VALUE }
+                .forEach(::walk)
+
+            return ordered
+        }
+
+        fun buildLevel(parentId: Int): List<ChannelTreeNode> =
+            orderSiblings(childrenByParent[parentId].orEmpty()).map { channel ->
+                ChannelTreeNode(
+                    channel = channel,
+                    children = buildLevel(channel.id),
+                )
+            }
+
+        val rootParentIds = flatChannels
+            .map { it.parentId }
+            .filter { it !in channelIds }
+            .distinct()
+
+        return rootParentIds.flatMap(::buildLevel)
+    }
+}
+'''
+
+
 TRANSMIT_ENGINE_KT = r'''
 package com.toosarax.ts3client.audio.tx
 
@@ -1293,6 +1363,176 @@ def upgrade_channel_screen(root: Path) -> None:
 
     replace_once(
         path,
+        "                InCallTab.Rooms -> RoomsTab(\n"
+        "                    channels = state.channels,\n"
+        "                    currentChannelId = state.currentChannelId,\n"
+        "                    onJoin = { channel ->\n",
+        "                InCallTab.Rooms -> RoomsTab(\n"
+        "                    channels = state.channels,\n"
+        "                    clients = state.clients,\n"
+        "                    ownClientId = state.ownClientId,\n"
+        "                    talkingClientIds = state.talkingClientIds,\n"
+        "                    currentChannelId = state.currentChannelId,\n"
+        "                    onJoin = { channel ->\n",
+    )
+
+    replace_once(
+        path,
+        "@Composable\n"
+        "private fun RoomsTab(\n"
+        "    channels: List<ChannelTreeNode>,\n"
+        "    currentChannelId: Int,\n"
+        "    onJoin: (com.toosarax.ts3client.protocol.ChannelInfo) -> Unit,\n"
+        ") {\n"
+        "    if (channels.isEmpty()) {\n",
+        "@Composable\n"
+        "private fun RoomsTab(\n"
+        "    channels: List<ChannelTreeNode>,\n"
+        "    clients: List<RemoteClientInfo>,\n"
+        "    ownClientId: Int,\n"
+        "    talkingClientIds: Set<Int>,\n"
+        "    currentChannelId: Int,\n"
+        "    onJoin: (com.toosarax.ts3client.protocol.ChannelInfo) -> Unit,\n"
+        ") {\n"
+        "    if (channels.isEmpty()) {\n",
+    )
+
+    replace_once(
+        path,
+        "        channels.forEach { node ->\n"
+        "            channelItems(node, depth = 0, currentChannelId, onJoin)\n"
+        "        }\n",
+        "        channels.forEach { node ->\n"
+        "            channelItems(\n"
+        "                node = node,\n"
+        "                depth = 0,\n"
+        "                currentChannelId = currentChannelId,\n"
+        "                clients = clients,\n"
+        "                ownClientId = ownClientId,\n"
+        "                talkingClientIds = talkingClientIds,\n"
+        "                onJoin = onJoin,\n"
+        "            )\n"
+        "        }\n",
+    )
+
+    replace_once(
+        path,
+        "private fun androidx.compose.foundation.lazy.LazyListScope.channelItems(\n"
+        "    node: ChannelTreeNode,\n"
+        "    depth: Int,\n"
+        "    currentChannelId: Int,\n"
+        "    onJoin: (com.toosarax.ts3client.protocol.ChannelInfo) -> Unit,\n"
+        ") {\n"
+        "    val channel = node.channel\n"
+        "    val isCurrent = channel.id == currentChannelId\n",
+        "private fun androidx.compose.foundation.lazy.LazyListScope.channelItems(\n"
+        "    node: ChannelTreeNode,\n"
+        "    depth: Int,\n"
+        "    currentChannelId: Int,\n"
+        "    clients: List<RemoteClientInfo>,\n"
+        "    ownClientId: Int,\n"
+        "    talkingClientIds: Set<Int>,\n"
+        "    onJoin: (com.toosarax.ts3client.protocol.ChannelInfo) -> Unit,\n"
+        ") {\n"
+        "    val channel = node.channel\n"
+        "    val isCurrent = channel.id == currentChannelId\n"
+        "    val channelClients = clients\n"
+        "        .filter { client -> client.channelId == channel.id }\n"
+        "        .sortedWith(\n"
+        "            compareBy<RemoteClientInfo> { client -> client.id != ownClientId }\n"
+        "                .thenBy { client -> client.nickname.lowercase() },\n"
+        "        )\n",
+    )
+
+    replace_once(
+        path,
+        "    node.children.forEach { child ->\n"
+        "        channelItems(child, depth + 1, currentChannelId, onJoin)\n"
+        "    }\n"
+        "}\n\n"
+        "@Composable\n"
+        "private fun ChannelRow(\n",
+        "    channelClients.forEach { client ->\n"
+        "        item(key = \"channel-${channel.id}-client-${client.id}\") {\n"
+        "            ChannelUserRow(\n"
+        "                client = client,\n"
+        "                depth = depth,\n"
+        "                isOwnUser = client.id == ownClientId,\n"
+        "                talking = client.id in talkingClientIds,\n"
+        "            )\n"
+        "        }\n"
+        "    }\n"
+        "    node.children.forEach { child ->\n"
+        "        channelItems(\n"
+        "            node = child,\n"
+        "            depth = depth + 1,\n"
+        "            currentChannelId = currentChannelId,\n"
+        "            clients = clients,\n"
+        "            ownClientId = ownClientId,\n"
+        "            talkingClientIds = talkingClientIds,\n"
+        "            onJoin = onJoin,\n"
+        "        )\n"
+        "    }\n"
+        "}\n\n"
+        "@Composable\n"
+        "private fun ChannelUserRow(\n"
+        "    client: RemoteClientInfo,\n"
+        "    depth: Int,\n"
+        "    isOwnUser: Boolean,\n"
+        "    talking: Boolean,\n"
+        ") {\n"
+        "    Row(\n"
+        "        modifier = Modifier\n"
+        "            .fillMaxWidth()\n"
+        "            .padding(start = (32 + depth * 16).dp, end = 8.dp)\n"
+        "            .clip(RoundedCornerShape(12.dp))\n"
+        "            .background(\n"
+        "                if (talking) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)\n"
+        "                else Color.Transparent,\n"
+        "            )\n"
+        "            .padding(horizontal = 12.dp, vertical = 8.dp),\n"
+        "        verticalAlignment = Alignment.CenterVertically,\n"
+        "        horizontalArrangement = Arrangement.spacedBy(10.dp),\n"
+        "    ) {\n"
+        "        Icon(\n"
+        "            imageVector = if (talking) Icons.Default.Mic else Icons.Default.Person,\n"
+        "            contentDescription = null,\n"
+        "            tint = if (talking) MaterialTheme.colorScheme.primary\n"
+        "            else MaterialTheme.colorScheme.onSurfaceVariant,\n"
+        "            modifier = Modifier.size(20.dp),\n"
+        "        )\n"
+        "        Column(modifier = Modifier.weight(1f)) {\n"
+        "            Text(\n"
+        "                text = client.nickname,\n"
+        "                style = MaterialTheme.typography.bodyMedium,\n"
+        "                fontWeight = if (isOwnUser || talking) FontWeight.Bold else FontWeight.Medium,\n"
+        "                color = if (talking) MaterialTheme.colorScheme.primary\n"
+        "                else MaterialTheme.colorScheme.onSurface,\n"
+        "            )\n"
+        "            if (isOwnUser) {\n"
+        "                Text(\n"
+        "                    text = \"Jij\",\n"
+        "                    style = MaterialTheme.typography.labelSmall,\n"
+        "                    color = MaterialTheme.colorScheme.primary,\n"
+        "                )\n"
+        "            }\n"
+        "        }\n"
+        "        if (talking) {\n"
+        "            Text(\n"
+        "                text = \"Praat\",\n"
+        "                style = MaterialTheme.typography.labelSmall,\n"
+        "                fontWeight = FontWeight.Bold,\n"
+        "                color = MaterialTheme.colorScheme.primary,\n"
+        "            )\n"
+        "        }\n"
+        "    }\n"
+        "}\n\n"
+        "@Composable\n"
+        "private fun ChannelRow(\n",
+    )
+
+    replace_once(
+        path,
         "private fun TalkTab(\n"
         "    state: ClientState,\n"
         "    onVoiceModeChanged: (VoiceMode) -> Unit,\n"
@@ -1385,12 +1625,12 @@ def upgrade_version(root: Path) -> None:
     text = path.read_text(encoding="utf-8")
 
     if "versionCode = 2" in text:
-        text = text.replace("versionCode = 2", "versionCode = 4", 1)
+        text = text.replace("versionCode = 2", "versionCode = 5", 1)
 
     if 'versionName = "0.2.0-pttconnect-neon"' in text:
         text = text.replace(
             'versionName = "0.2.0-pttconnect-neon"',
-            'versionName = "0.4.0-pttconnect-controls"',
+            'versionName = "0.5.0-pttconnect-channels"',
             1,
         )
 
@@ -1415,6 +1655,7 @@ def main() -> None:
         root / "app/src/main/java/com/toosarax/ts3client/protocol/ProtocolModels.kt",
         root / "app/src/main/java/com/toosarax/ts3client/protocol/ts3j/Ts3jProtocol.kt",
         root / "app/src/main/java/com/toosarax/ts3client/audio/tx/TransmitEngine.kt",
+        root / "app/src/main/java/com/toosarax/ts3client/client/ChannelTreeBuilder.kt",
         root / "app/build.gradle.kts",
     ]
 
@@ -1440,6 +1681,10 @@ def main() -> None:
         root / "app/src/main/java/com/toosarax/ts3client/audio/tx/TransmitEngine.kt",
         TRANSMIT_ENGINE_KT,
     )
+    write_text(
+        root / "app/src/main/java/com/toosarax/ts3client/client/ChannelTreeBuilder.kt",
+        CHANNEL_TREE_BUILDER_KT,
+    )
 
     upgrade_client_models(root)
     upgrade_client_controller(root)
@@ -1451,7 +1696,7 @@ def main() -> None:
     upgrade_channel_screen(root)
     upgrade_version(root)
 
-    print("PTTConnect UI + mute + nickname update toegepast")
+    print("PTTConnect UI + kanalenvolgorde + online gebruikers toegepast")
 
 
 if __name__ == "__main__":
